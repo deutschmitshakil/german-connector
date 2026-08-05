@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="bn" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch mit Shakil - German Connectors Learning App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50:  '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            50:  '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React & ReactDOM CDNs -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX Compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .level-badge-A1 { background: #dbeafe; color: #1e40af; }
+        .level-badge-A2 { background: #d1fae5; color: #065f46; }
+        .level-badge-B1 { background: #fef3c7; color: #92400e; }
+        .level-badge-B2 { background: #ffedd5; color: #9a3412; }
+        .level-badge-C1 { background: #fce7f3; color: #9d174d; }
+        .level-badge-C2 { background: #ede9fe; color: #5b21b6; }
+        .dark .level-badge-A1 { background: #1e3a8a; color: #bfdbfe; }
+        .dark .level-badge-A2 { background: #064e3b; color: #a7f3d0; }
+        .dark .level-badge-B1 { background: #78350f; color: #fde68a; }
+        .dark .level-badge-B2 { background: #7c2d12; color: #fed7aa; }
+        .dark .level-badge-C1 { background: #831843; color: #fbcfe8; }
+        .dark .level-badge-C2 { background: #4c1d95; color: #ddd6fe; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-300">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Full vocabulary extracted from "All connectors-Deutsch mit Shakil.pdf"
+        // Every connector now includes all 5–7 example sentences from the source
+        const defaultVocabulary = [
+          // ==================== A1 ====================
+          {
+            german: "und",
+            bengali: "এবং",
+            english: "and",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "A1",
+            grammar: "Hauptsatz + Hauptsatz (Position 0). Connects two equal clauses without changing word order.",
+            examples: [
+              { de: "Ich lerne Deutsch und (ich) liebe die Sprache.", bn: "আমি জার্মান শিখি এবং আমি ভাষাটিকে ভালোবাসি।" },
+              { de: "Er kauft Brot und (er) bringt Milch mit.", bn: "সে রুটি কেনে এবং সে সাথে দুধ নিয়ে আসে।" },
+              { de: "Wir wohnen in Berlin und (wir) arbeiten hier.", bn: "আমরা বার্লিনে বাস করি এবং আমরা এখানে কাজ করি।" },
+              { de: "Sie kocht Suppe und (sie) deckt den Tisch.", bn: "সে স্যুপ রান্না করে এবং সে টেবিল গোছায়।" },
+              { de: "Das Wetter ist schön und die Sonne scheint.", bn: "আবহাওয়া সুন্দর এবং সূর্য কিরণ দিচ্ছে।" },
+              { de: "Ich trinke Tee und esse Kekse.", bn: "আমি চা পান করি এবং বিস্কুট খাই।" },
+              { de: "Wir gehen spazieren und hören Musik.", bn: "আমরা হাঁটতে যাই এবং আমরা গান শুনি।" }
+            ]
+          },
+          {
+            german: "aber",
+            bengali: "কিন্তু",
+            english: "but",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "A1",
+            grammar: "Hauptsatz + Hauptsatz (Position 0). Expresses a contrast or limitation.",
+            examples: [
+              { de: "Das Auto ist billig, aber es ist sehr alt.", bn: "গাড়িটি সস্তা, কিন্তু এটি খুব পুরোনো।" },
+              { de: "Ich möchte kommen, aber ich habe keine Zeit.", bn: "আমি আসতে চাই, কিন্তু আমার সময় নেই।" },
+              { de: "Er lernt viel, aber er versteht es nicht.", bn: "সে অনেক পড়াশোনা করে, কিন্তু সে এটি বোঝে না।" },
+              { de: "Sie ist müde, aber sie arbeitet weiter.", bn: "সে ক্লান্ত, কিন্তু সে কাজ চালিয়ে যাচ্ছে।" },
+              { de: "Das Restaurant ist klein, aber das Essen ist gut.", bn: "রেস্তোরাঁটি ছোট, কিন্তু খাবার ভালো।" },
+              { de: "Ich habe Hunger, aber ich esse jetzt nicht.", bn: "আমার খিদে পেয়েছে, কিন্তু আমি এখন খাব না।" },
+              { de: "Der Apfel ist schön, aber er ist sehr sauer.", bn: "আপেলটি দেখতে সুন্দর, কিন্তু এটি অনেক টক।" }
+            ]
+          },
+          {
+            german: "oder",
+            bengali: "অথবা",
+            english: "or",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "A1",
+            grammar: "Hauptsatz + Hauptsatz (Position 0). Presents an alternative.",
+            examples: [
+              { de: "Trinkst du Kaffee oder magst du Tee?", bn: "তুমি কি কফি পান করো নাকি চা পছন্দ করো?" },
+              { de: "Wir gehen ins Kino oder wir bleiben zu Hause.", bn: "আমরা সিনেমা দেখতে যাব অথবা আমরা বাড়িতে থাকব।" },
+              { de: "Fährst du mit dem Bus oder nimmst du ein Taxi?", bn: "তুমি কি বাসে যাবে নাকি একটা ট্যাক্সি নেবে?" },
+              { de: "Isst du Pizza oder bestellst du Pasta?", bn: "তুমি কি পিৎজা খাবে নাকি পাস্তা অর্ডার করবে?" },
+              { de: "Kommst du heute oder besuchst du uns morgen?", bn: "তুমি কি আজ আসবে নাকি আগামীকাল আমাদের দেখতে আসবে?" },
+              { de: "Lernst du Deutsch oder (lernst du) Englisch?", bn: "তুমি কি জার্মান শিখছো নাকি ইংরেজি শিখছো?" },
+              { de: "Möchtest du Saft oder (möchtest du) Wasser?", bn: "তুমি কি জুস চাও নাকি পানি চাও?" }
+            ]
+          },
+          {
+            german: "denn",
+            bengali: "কারণ",
+            english: "because",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "A1",
+            grammar: "Hauptsatz + Hauptsatz (Position 0). Gives a reason.",
+            examples: [
+              { de: "Ich bleibe im Bett, denn ich bin krank.", bn: "আমি বিছানায় থাকছি, কারণ আমি অসুস্থ।" },
+              { de: "Er feiert, denn er hat die Prüfung bestanden.", bn: "সে উদযাপন করছে, কারণ সে পরীক্ষায় পাস করেছে।" },
+              { de: "Wir beeilen uns, denn der Zug kommt bald.", bn: "আমরা তাড়াহুড়ো করছি, কারণ ট্রেনটি শীঘ্রই আসবে।" },
+              { de: "Sie kauft eine Jacke, denn es ist kalt.", bn: "সে একটি জ্যাকেট কিনছে, কারণ আবহাওয়া ঠান্ডা।" },
+              { de: "Ich esse jetzt, denn ich habe großen Hunger.", bn: "আমি এখন খাচ্ছি, কারণ আমার খুব খিদে পেয়েছে।" },
+              { de: "Er kommt nicht, denn er arbeitet jetzt.", bn: "সে আসছে না, কারণ সে এখন কাজ করছে।" },
+              { de: "Ich schlafe, denn ich bin sehr müde.", bn: "আমি ঘুমাচ্ছি, কারণ আমি অনেক ক্লান্ত।" }
+            ]
+          },
+
+          // ==================== A2 ====================
+          {
+            german: "weil",
+            bengali: "কারণ",
+            english: "because",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Sends the conjugated verb to the very end of the clause.",
+            examples: [
+              { de: "Ich bleibe im Bett, weil ich krank bin.", bn: "আমি বিছানায় থাকছি, কারণ আমি অসুস্থ।" },
+              { de: "Er feiert, weil er die Prüfung bestanden hat.", bn: "সে উদযাপন করছে, কারণ সে পরীক্ষায় পাস করেছে।" },
+              { de: "Sie kauft eine Jacke, weil es kalt ist.", bn: "সে একটি জ্যাকেট কিনছে, কারণ আবহাওয়া ঠান্ডা।" },
+              { de: "Ich lerne Deutsch, weil ich in Deutschland leben will.", bn: "আমি জার্মান শিখছি, কারণ আমি জার্মানিতে বাস করতে চাই।" },
+              { de: "Wir gehen nicht raus, weil es stark regnet.", bn: "আমরা বাইরে যাচ্ছি না, কারণ খুব বৃষ্টি হচ্ছে।" },
+              { de: "Ich trinke Wasser, weil ich durstig bin.", bn: "আমি পানি খাচ্ছি, কারণ আমি তৃষ্ণার্ত।" },
+              { de: "Er ist froh, weil er heute frei hat.", bn: "সে খুশি, কারণ তার আজ ছুটি।" }
+            ]
+          },
+          {
+            german: "dass",
+            bengali: "যে",
+            english: "that",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Connects main clause with a dependent nominal clause.",
+            examples: [
+              { de: "Ich weiß, dass du recht hast.", bn: "আমি জানি যে তুমি সঠিক।" },
+              { de: "Er sagt, dass er morgen kommt.", bn: "সে বলে যে সে আগামীকাল আসবে।" },
+              { de: "Sie glaubt, dass der Test einfach ist.", bn: "সে বিশ্বাস করে যে পরীক্ষাটি সহজ।" },
+              { de: "Es ist wichtig, dass du pünktlich bist.", bn: "এটি গুরুত্বপূর্ণ যে তুমি সময়নিষ্ঠ হও।" },
+              { de: "Ich hoffe, dass es dir gut geht.", bn: "আমি আশা করি যে তুমি ভালো আছো।" },
+              { de: "Ich finde es gut, dass du lernst.", bn: "আমার ভালো লাগছে যে তুমি শিখছো।" },
+              { de: "Wir sehen, dass das Wetter schön ist.", bn: "আমরা দেখছি যে আবহাওয়া চমৎকার।" }
+            ]
+          },
+          {
+            german: "wenn",
+            bengali: "যদি / যখন",
+            english: "if / whenever",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Used for conditionals ('if') or repeated events in present/future.",
+            examples: [
+              { de: "Wenn es regnet, bleiben wir zu Hause.", bn: "যদি বৃষ্টি হয়, আমরা বাড়িতে থাকব।" },
+              { de: "Ich rufe dich an, wenn ich Zeit habe.", bn: "আমি তোমাকে ফোন করব, যখন আমার সময় থাকবে।" },
+              { de: "Wenn man hart arbeitet, hat man Erfolg.", bn: "যদি কেউ কঠোর পরিশ্রম করে, তবে সে সফল হয়।" },
+              { de: "Er freut sich, wenn seine Freunde kommen.", bn: "সে খুশি হয়, যখন তার বন্ধুরা আসে।" },
+              { de: "Wenn du Hilfe brauchst, sag es mir.", bn: "যদি তোমার সাহায্যের প্রয়োজন হয়, আমাকে বলো।" },
+              { de: "Wenn ich komme, helfe ich dir.", bn: "যদি আমি আসি, তোমাকে সাহায্য করব।" }
+            ]
+          },
+          {
+            german: "als",
+            bengali: "যখন (অতীতকাল)",
+            english: "when (single event in past)",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Used exclusively for single, non-repeated events in the past.",
+            examples: [
+              { de: "Als ich ein Kind war, wohnte ich in Berlin.", bn: "আমি যখন শিশু ছিলাম, আমি বার্লিনে থাকতাম।" },
+              { de: "Als der Zug ankam, war es schon dunkel.", bn: "ট্রেনটি যখন পৌঁছাল, তখন ইতিমধ্যে অন্ধকার হয়ে গিয়েছিল।" },
+              { de: "Als ich gestern aufwachte, regnete es.", bn: "গতকাল যখন আমার ঘুম ভাঙল, তখন বৃষ্টি হচ্ছিল।" },
+              { de: "Als sie 18 Jahre alt war, machte sie den Führerschein.", bn: "যখন তার বয়স ১৮ বছর ছিল, সে ড্রাইভিং লাইসেন্স করেছিল।" },
+              { de: "Als wir in Deutschland ankamen, war es Winter.", bn: "আমরা যখন জার্মানিতে পৌঁছালাম, তখন শীতকাল ছিল।" },
+              { de: "Als das Spiel begann, saßen wir auf dem Sofa.", bn: "খেলাটি যখন শুরু হলো, আমরা সোফায় বসে ছিলাম।" },
+              { de: "Als er mich anrief, kochte ich gerade das Essen.", bn: "সে যখন আমাকে কল করল, আমি তখন ঠিক রান্না করছিলাম।" }
+            ]
+          },
+          {
+            german: "ob",
+            bengali: "কিনা",
+            english: "whether / if",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Used in indirect yes/no questions.",
+            examples: [
+              { de: "Ich weiß nicht, ob er heute kommt.", bn: "সে আজ আসবে কিনা আমি জানি না।" },
+              { de: "Kannst du mir sagen, ob der Bus schon da ist?", bn: "বাসটি ইতিমধ্যে সেখানে এসেছে কিনা তুমি কি আমাকে বলতে পারো?" },
+              { de: "Er fragt, ob ich Zeit habe.", bn: "সে জিজ্ঞেস করছে, আমার সময় আছে কিনা।" },
+              { de: "Sie möchte wissen, ob ich zur Arbeit gehe.", bn: "সে জানতে চায়, আমি কাজে যাচ্ছি কিনা।" },
+              { de: "Kannst du mir sagen, ob das richtig ist?", bn: "তুমি কি বলতে পারো, এটা সঠিক কিনা?" }
+            ]
+          },
+          {
+            german: "wo / was / wie / woher / wer / wann …",
+            bengali: "কোথায় / কী / কীভাবে / কোথা থেকে / কে / কখন …",
+            english: "where / what / how / from where / who / when …",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "A2",
+            grammar: "Nebensatz (Verb am Ende). Indirect question words that send the verb to the end.",
+            examples: [
+              { de: "Ich weiß nicht, wo du wohnst.", bn: "আমি জানি না, তুমি কোথায় থাকো।" },
+              { de: "Sie fragt, was ich mache.", bn: "সে জিজ্ঞেস করছে, আমি কী করছি।" },
+              { de: "Ich weiß nicht, wie spät es ist.", bn: "আমি জানি না এখন কয়টা বাজে।" },
+              { de: "Er fragt, woher du kommst.", bn: "সে জিজ্ঞেস করছে তুমি কোথা থেকে এসেছো।" },
+              { de: "Ich habe keine Ahnung, wer das ist.", bn: "আমার কোনো ধারণা নেই এটা কে।" },
+              { de: "Sie möchte wissen, welches Buch du liest.", bn: "সে জানতে চায় তুমি কোন বইটি পড়ছো।" },
+              { de: "Ich weiß nicht, wann du kommst.", bn: "আমি জানি না, তুমি কখন আসবে।" },
+              { de: "Er fragt, warum ich Deutsch lerne.", bn: "সে জিজ্ঞেস করছে, আমি কেন জার্মান শিখছি।" }
+            ]
+          },
+          {
+            german: "dann",
+            bengali: "তারপর",
+            english: "then",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "A2",
+            grammar: "Hauptsatz (Position 1 – Inversion). Indicates sequence of time.",
+            examples: [
+              { de: "Zuerst frühstücke ich, dann gehe ich zur Arbeit.", bn: "প্রথমে আমি সকালের নাস্তা করি, তারপর আমি কাজে যাই।" },
+              { de: "Wir lernen zwei Stunden, dann machen wir eine Pause.", bn: "আমরা দুই ঘণ্টা পড়াশোনা করি, তারপর আমরা একটা বিরতি নিই।" },
+              { de: "Wasch dir die Hände, dann können wir essen.", bn: "হাত ধুয়ে নাও, তারপর আমরা খেতে পারি।" },
+              { de: "Er packt seine Sachen, dann verlässt er das Haus.", bn: "সে তার জিনিসপত্র গোছায়, তারপর সে বাড়ি থেকে বের হয়।" },
+              { de: "Komm nach Hause, dann besprechen wir das.", bn: "বাড়ি এসো, তারপর আমরা এটি আলোচনা করব।" }
+            ]
+          },
+          {
+            german: "deshalb / darum / deswegen",
+            bengali: "তাই / সে কারণে",
+            english: "therefore / that's why",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "A2",
+            grammar: "Hauptsatz (Position 1 – Verb follows immediately). Expresses consequence.",
+            examples: [
+              { de: "Ich bin krank, deshalb bleibe ich zu Hause.", bn: "আমি অসুস্থ, তাই আমি বাড়িতে থাকছি।" },
+              { de: "Er hat viel gelernt, deshalb hat er eine gute Note.", bn: "সে অনেক পড়াশোনা করেছে, তাই সে ভালো গ্রেড পেয়েছে।" },
+              { de: "Die Sonne scheint, darum gehe ich nach draußen.", bn: "সূর্য উঠেছে, তাই আমি বাইরে যাব।" },
+              { de: "Du bist nett, deswegen helfe ich dir.", bn: "তুমি দয়ালু, তাই আমি তোমাকে সাহায্য করি।" },
+              { de: "Es schneit, deshalb fahren wir vorsichtig.", bn: "বরফ পড়ছে, তাই আমরা সাবধানে গাড়ি চালাচ্ছি।" },
+              { de: "Sie liebt Musik, deshalb lernt sie Gitarre.", bn: "সে গান ভালোবাসে, তাই সে গিটার শিখছে।" },
+              { de: "Wir haben kein Geld, deshalb kaufen wir nichts.", bn: "আমাদের কাছে টাকা নেই, তাই আমরা কিছু কিনছি না।" }
+            ]
+          },
+          {
+            german: "trotzdem",
+            bengali: "তবুও",
+            english: "nevertheless / despite that",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "A2",
+            grammar: "Hauptsatz (Position 1 – Inversion). Expresses opposition.",
+            examples: [
+              { de: "Es regnet, trotzdem gehen wir im Park spazieren.", bn: "বৃষ্টি হচ্ছে। তবুও আমরা পার্কে হাঁটতে যাচ্ছি।" },
+              { de: "Er hat keine Zeit, trotzdem hilft er seinem Freund.", bn: "তার সময় নেই। তবুও সে তার বন্ধুকে সাহায্য করছে।" },
+              { de: "Das Buch ist schwer, trotzdem liest es das Kind.", bn: "বইটি কঠিন। তবুও শিশুটি এটি পড়ছে।" },
+              { de: "Sie ist erkältet, trotzdem geht sie zur Arbeit.", bn: "তার ঠান্ডা লেগেছে। তবুও সে কাজে যাচ্ছে।" },
+              { de: "Wir sind spät dran, trotzdem laufen wir nicht.", bn: "আমাদের দেরি হয়ে গেছে। তবুও আমরা দৌড়াচ্ছি না।" }
+            ]
+          },
+
+          // ==================== B1 ====================
+          {
+            german: "obwohl",
+            bengali: "যদিও",
+            english: "although",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Expresses concession.",
+            examples: [
+              { de: "Er geht spazieren, obwohl es stark regnet.", bn: "সে হাঁটতে যাচ্ছে, যদিও খুব বৃষ্টি হচ্ছে।" },
+              { de: "Obwohl sie müde ist, lernt sie weiter.", bn: "যদিও সে ক্লান্ত, সে পড়াশোনা চালিয়ে যাচ্ছে।" },
+              { de: "Ich trinke Kaffee, obwohl es Nacht ist.", bn: "আমি কফি খাচ্ছি, যদিও এখন রাত।" },
+              { de: "Obwohl er arbeitet, hat er kein Geld.", bn: "যদিও সে কাজ করে, তার কাছে টাকা নেই।" },
+              { de: "Ich kaufe das Handy, obwohl es teuer ist.", bn: "আমি মোবাইলটি কিনছি, যদিও এটি দামি।" },
+              { de: "Er hat die Prüfung bestanden, obwohl er wenig gelernt hat.", bn: "সে পরীক্ষায় পাস করেছে, যদিও সে কম পড়াশোনা করেছিল।" },
+              { de: "Wir sind glücklich, obwohl wir Probleme haben.", bn: "আমরা সুখী, যদিও আমাদের সমস্যা আছে।" }
+            ]
+          },
+          {
+            german: "sondern",
+            bengali: "বরং",
+            english: "but rather",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "B1",
+            grammar: "Hauptsatz + Hauptsatz (Position 0). Corrects a preceding negation.",
+            examples: [
+              { de: "Das ist kein Hund, sondern es ist eine Katze.", bn: "এটি কুকুর নয়, বরং এটি একটি বিড়াল।" },
+              { de: "Er lernt nicht Englisch, sondern er lernt Deutsch.", bn: "সে ইংরেজি শিখছে না, বরং সে জার্মান শিখছে।" },
+              { de: "Ich trinke keinen Tee, sondern ich trinke Kaffee.", bn: "আমি চা পান করি না, বরং আমি কফি পান করি।" },
+              { de: "Er kommt heute nicht, sondern er kommt morgen.", bn: "সে আজ আসছে না, বরং সে আসবে আগামীকাল।" },
+              { de: "Wir fahren nicht im Sommer, sondern wir reisen im Winter.", bn: "আমরা গ্রীষ্মে যাচ্ছি না, বরং আমরা শীতে ভ্রমণ করছি।" },
+              { de: "Ich suche keinen Job, sondern ich gründe eine Firma.", bn: "আমি চাকরি খুঁজছি না, বরং আমি একটি কোম্পানি প্রতিষ্ঠা করছি।" },
+              { de: "Das Kleid ist nicht rot, sondern es ist blau.", bn: "পোশাকটি লাল নয়, বরং এটি নীল।" }
+            ]
+          },
+          {
+            german: "außerdem",
+            bengali: "তাছাড়া",
+            english: "furthermore / besides",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "B1",
+            grammar: "Hauptsatz (Position 1 – Inversion). Adds supportive information.",
+            examples: [
+              { de: "Sie spricht Englisch. Außerdem lernt sie Spanisch.", bn: "সে ইংরেজি বলে। তাছাড়া সে স্প্যানিশ শিখছে।" },
+              { de: "Die Wohnung ist groß. Außerdem ist sie sehr günstig.", bn: "অ্যাপার্টমেন্টটি বড়। তাছাড়া এটি খুব সস্তা।" },
+              { de: "Er spielt Klavier. Außerdem singt er in einem Chor.", bn: "সে পিয়ানো বাজায়। তাছাড়া সে একটি দলে গান গায়।" },
+              { de: "Ich habe einen Hund. Außerdem möchte ich eine Katze.", bn: "আমার একটি কুকুর আছে। তাছাড়া আমি একটি বিড়াল চাই।" },
+              { de: "Der Film war lustig. Außerdem war er kurz.", bn: "সিনেমাটি ছিল মজার। তাছাড়া এটি ছোটও ছিল।" },
+              { de: "Ich muss einkaufen. Außerdem muss ich die Wohnung putzen.", bn: "আমাকে কেনাকাটা করতে হবে। তাছাড়া আমাকে অ্যাপার্টমেন্টটি পরিষ্কার করতে হবে।" },
+              { de: "Das Obst ist frisch. Außerdem schmeckt es sehr süß.", bn: "ফলগুলো তাজা। তাছাড়া এগুলো খেতে খুব মিষ্টি।" }
+            ]
+          },
+          {
+            german: "bevor",
+            bengali: "আগে",
+            english: "before",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Temporal precedence.",
+            examples: [
+              { de: "Wasch deine Hände, bevor du am Tisch isst.", bn: "টেবিলে খাওয়ার আগে তোমার হাত ধুয়ে নাও।" },
+              { de: "Bevor ich schlafen gehe, lese ich ein Buch.", bn: "ঘুমাতে যাওয়ার আগে আমি একটি বই পড়ি।" },
+              { de: "Er checkt die Dokumente, bevor er sie unterschreibt.", bn: "সে নথিপত্রগুলো পরীক্ষা করে, সেগুলি স্বাক্ষর করার আগে।" },
+              { de: "Bevor der Zug abfährt, kaufen wir Fahrkarten.", bn: "ট্রেনটি ছাড়ার আগে আমরা টিকিট কিনি।" },
+              { de: "Triff eine Entscheidung, bevor es zu spät ist.", bn: "একটি সিদ্ধান্ত নাও, খুব দেরি হয়ে যাওয়ার আগে।" }
+            ]
+          },
+          {
+            german: "da",
+            bengali: "যেহেতু",
+            english: "since / because",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Often used when the reason is already known.",
+            examples: [
+              { de: "Da ich kein Geld habe, bleibe ich zu Hause.", bn: "যেহেতু আমার টাকা নেই, আমি বাড়িতে থাকছি।" },
+              { de: "Wir fliegen nicht, da die Flüge zu teuer sind.", bn: "আমরা বিমানে যাচ্ছি না, যেহেতু বিমানভাড়া খুব বেশি।" },
+              { de: "Da er krank ist, kann er nicht arbeiten.", bn: "যেহেতু সে অসুস্থ, সে কাজ করতে পারছে না।" },
+              { de: "Sie freut sich, da sie Geburtstag hat.", bn: "সে আনন্দিত, যেহেতু আজ তার জন্মদিন।" },
+              { de: "Da das Wetter schlecht ist, sagen wir das Picknick ab.", bn: "যেহেতু আবহাওয়া খারাপ, আমরা পিকনিকটি বাতিল করছি।" }
+            ]
+          },
+          {
+            german: "seitdem / seit",
+            bengali: "যখন থেকে / পর থেকে",
+            english: "since (temporal)",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Indicates ongoing action starting in the past.",
+            examples: [
+              { de: "Seitdem er in Berlin wohnt, lernt er Deutsch.", bn: "যখন থেকে সে বার্লিনে বাস করে, সে জার্মান শিখছে।" },
+              { de: "Seit ich Sport mache, fühle ich mich gesund.", bn: "যখন থেকে আমি খেলাধুলা করি, আমি সুস্থ বোধ করি।" },
+              { de: "Seitdem sie arbeitet, hat sie wenig Freizeit.", bn: "যখন থেকে সে কাজ করে, তার অবসর সময় কম।" },
+              { de: "Seit er ein Auto hat, fährt er nicht mehr mit dem Bus.", bn: "যখন থেকে তার একটি গাড়ি আছে, সে আর বাসে যাতায়াত করে না।" },
+              { de: "Seitdem wir hier wohnen, kennen wir die Nachbarn.", bn: "যখন থেকে আমরা এখানে বাস করি, আমরা প্রতিবেশীদের চিনি।" },
+              { de: "Seit sie Deutsch lernt, spricht sie jeden Tag.", bn: "যখন থেকে সে জার্মান শিখছে, সে প্রতিদিন কথা বলে।" },
+              { de: "Seitdem der Kurs begann, lerne ich fleißig.", bn: "কোর্সটি শুরু হওয়ার পর থেকে আমি মন দিয়ে পড়াশোনা করছি।" }
+            ]
+          },
+          {
+            german: "damit",
+            bengali: "যাতে / উদ্দেশ্যে",
+            english: "so that / in order that",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Expresses purpose with different subjects.",
+            examples: [
+              { de: "Ich lerne viel, damit ich die Prüfung bestehe.", bn: "আমি অনেক পড়াশোনা করি, যাতে আমি পরীক্ষায় পাস করি।" },
+              { de: "Er spart Geld, damit er ein Auto kaufen kann.", bn: "সে টাকা জমাচ্ছে, যাতে সে একটি গাড়ি কিনতে পারে।" },
+              { de: "Sie gibt mir den Schlüssel, damit ich die Tür öffne.", bn: "সে আমাকে চাবিটি দিচ্ছে, যাতে আমি দরজাটি খুলি।" },
+              { de: "Wir sprechen leise, damit das Kind schläft.", bn: "আমরা নিচু স্বরে কথা বলছি, যাতে শিশুটি ঘুমায়।" },
+              { de: "Er trinkt Kaffee, damit er wach bleibt.", bn: "সে কফি পান করছে, যাতে সে জেগে থাকে।" },
+              { de: "Ich gebe dir meine Nummer, damit du mich anrufst.", bn: "আমি তোমাকে আমার নম্বর দিচ্ছি, যাতে তুমি আমাকে কল করো।" },
+              { de: "Sie kocht Suppe, damit ihr Mann etwas Warmes isst.", bn: "সে স্যুপ রান্না করছে, যাতে তার স্বামী গরম কিছু খায়।" }
+            ]
+          },
+          {
+            german: "während (Temporal)",
+            bengali: "যখন / চলাকালীন",
+            english: "while",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Expresses simultaneous actions.",
+            examples: [
+              { de: "Während ich koche, hört mein Mann Musik.", bn: "আমি যখন রান্না করি, আমার স্বামী গান শোনে।" },
+              { de: "Während es regnet, bleiben wir im Haus.", bn: "যখন বৃষ্টি হয়, আমরা বাড়িতে থাকি।" },
+              { de: "Während sie lernt, trinkt sie einen Tee.", bn: "যখন সে পড়াশোনা করে, সে এক কাপ চা পান করে।" },
+              { de: "Während der Lehrer spricht, hören die Schüler zu.", bn: "যখন শিক্ষক কথা বলেন, ছাত্ররা মনোযোগ দিয়ে শোনে।" },
+              { de: "Während er schläft, lese ich ein Buch.", bn: "যখন সে ঘুমায়, আমি একটি বই পড়ি।" },
+              { de: "Während wir warten, können wir Kaffee trinken.", bn: "আমরা যখন অপেক্ষা করছি, তখন আমরা কফি পান করতে পারি।" },
+              { de: "Während das Kind spielt, arbeitet die Mutter.", bn: "যখন শিশুটি খেলে, মা কাজ করেন।" }
+            ]
+          },
+          {
+            german: "so … dass",
+            bengali: "এতটাই … যে",
+            english: "so … that",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Expresses degree + result.",
+            examples: [
+              { de: "Er war so müde, dass er sofort einschlief.", bn: "সে এতটাই ক্লান্ত ছিল যে সে সাথে সাথে ঘুমিয়ে পড়েছিল।" },
+              { de: "Der Test war so schwer, dass viele Schüler Fehler machten.", bn: "পরীক্ষাটি এতটাই কঠিন ছিল যে অনেক ছাত্র ভুল করেছিল।" },
+              { de: "Das Auto ist so teuer, dass ich es nicht kaufen kann.", bn: "গাড়িটি এতটাই দামি যে আমি এটি কিনতে পারছি না।" },
+              { de: "Die Suppe war so heiß, dass ich sie nicht essen konnte.", bn: "স্যুপটি এতটাই গরম ছিল যে আমি এটি খেতে পারছিলাম না।" },
+              { de: "Sie spricht so schnell, dass ich sie nicht verstehe.", bn: "সে এতটাই দ্রুত কথা বলে যে আমি তার কথা বুঝি না।" },
+              { de: "Das Zimmer ist so dunkel, dass man nichts sehen kann.", bn: "ঘরটি এতটাই অন্ধকার যে কেউ কিছু দেখতে পাচ্ছে না।" },
+              { de: "Es regnet so stark, dass wir nicht rausgehen können.", bn: "এত বেশি বৃষ্টি হচ্ছে যে আমরা বাইরে যেতে পারছি না।" }
+            ]
+          },
+          {
+            german: "sodass",
+            bengali: "যার ফলে / যাতে",
+            english: "so that / as a result",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Expresses a direct result.",
+            examples: [
+              { de: "Es regnete in Strömen, sodass die Straßen überschwemmt wurden.", bn: "মুষলধারে বৃষ্টি হচ্ছিল, যার ফলে রাস্তাগুলো প্লাবিত হয়ে গিয়েছিল।" },
+              { de: "Er sprach sehr leise, sodass ihn niemand verstehen konnte.", bn: "সে খুব নিচু স্বরে কথা বলছিল, যার ফলে কেউ তাকে বুঝতে পারছিল না।" },
+              { de: "Sie hat hart trainiert, sodass sie den Marathon gewann.", bn: "সে কঠোর প্রশিক্ষণ নিয়েছিল, যার ফলে সে ম্যারাথনে জিতেছিল।" },
+              { de: "Der Flug hatte Verspätung, sodass wir den Anschluss verpassten.", bn: "ফ্লাইটটি বিলম্বিত ছিল, যার ফলে আমরা পরবর্তী সংযোগটি মিস করেছিলাম।" },
+              { de: "Das Auto wurde repariert, sodass wir sicher fahren können.", bn: "গাড়িটি মেরামত করা হয়েছে, যাতে আমরা নিরাপদে গাড়ি চালাতে পারি।" }
+            ]
+          },
+          {
+            german: "entweder … oder",
+            bengali: "হয় … না হয়",
+            english: "either … or",
+            type: "Zweiteiliger Konnektor – Position 0",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion presenting strict alternatives.",
+            examples: [
+              { de: "Entweder wir gehen ins Kino, oder wir bleiben zu Hause.", bn: "হয় আমরা সিনেমা দেখতে যাব, না হয় আমরা বাড়িতে থাকব।" },
+              { de: "Entweder du isst Pizza, oder du nimmst Nudeln.", bn: "হয় তুমি পিৎজা খাবে, না হয় তুমি নুডলস নেবে।" },
+              { de: "Er kommt entweder heute, oder er besucht uns morgen.", bn: "সে হয় আজ আসবে, না হয় আগামীকাল আমাদের দেখতে আসবে।" },
+              { de: "Wir fahren entweder mit dem Bus, oder wir nehmen ein Taxi.", bn: "আমরা হয় বাসে যাব, না হয় একটা ট্যাক্সি নেব।" },
+              { de: "Entweder trinkst du Kaffee, oder du trinkst Tee.", bn: "হয় তুমি কফি পান করবে, না হয় তুমি চা পান করবে।" },
+              { de: "Sie lernt entweder Deutsch, oder sie lernt Englisch.", bn: "সে হয় জার্মান শিখবে, না হয় সে ইংরেজি শিখবে।" },
+              { de: "Entweder wir kaufen das Brot, oder wir backen einen Kuchen.", bn: "হয় আমরা রুটি কিনব, না হয় আমরা একটা কেক বানাব।" }
+            ]
+          },
+          {
+            german: "sowohl … als auch",
+            bengali: "উভয়ই / এটিও … ওটিও",
+            english: "both … and",
+            type: "Zweiteiliger Konnektor – Paralleler Satzbau",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion connecting two positive elements.",
+            examples: [
+              { de: "Ich spreche sowohl Deutsch als auch Englisch.", bn: "আমি জার্মান এবং ইংরেজি উভয় ভাষাতেই কথা বলি।" },
+              { de: "Er mag sowohl Pizza als auch Pasta.", bn: "সে পিৎজা এবং পাস্তা উভয়ই পছন্দ করে।" },
+              { de: "Wir besuchen sowohl Berlin als auch München.", bn: "আমরা বার্লিন এবং মিউনিখ উভয় শহরই ভ্রমণ করব।" },
+              { de: "Sie kauft sowohl ein Kleid als auch eine Jacke.", bn: "সে একটি পোশাক এবং একটি জ্যাকেট উভয়ই কিনছে।" },
+              { de: "Das Buch ist sowohl billig als auch gut.", bn: "বইটি সস্তাও এবং ভালোও।" },
+              { de: "Mein Vater trinkt sowohl Kaffee als auch Tee.", bn: "আমার বাবা কফি এবং চা উভয়ই পান করেন।" },
+              { de: "Sie ist sowohl klug als auch fleißig.", bn: "সে বুদ্ধিমতীও এবং পরিশ্রমীও।" }
+            ]
+          },
+          {
+            german: "nicht nur … sondern auch",
+            bengali: "শুধু এটিই নয় … ওটিও",
+            english: "not only … but also",
+            type: "Zweiteiliger Konnektor – Position 0",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion emphasizing dual positive attributes.",
+            examples: [
+              { de: "Er spricht nicht nur Deutsch, sondern auch Englisch.", bn: "সে শুধু জার্মানই বলে না, ইংরেজিও বলে।" },
+              { de: "Wir essen nicht nur Pizza, sondern auch Salat.", bn: "আমরা শুধু পিৎজাই খাই না, সালাদও খাই।" },
+              { de: "Das Auto ist nicht nur schön, sondern auch billig.", bn: "গাড়িটি শুধু সুন্দরই নয়, সস্তাও।" },
+              { de: "Sie lernt nicht nur Grammatik, sondern auch Vokabeln.", bn: "সে শুধু ব্যাকরণই শেখে না, শব্দভাণ্ডারও শেখে।" },
+              { de: "Ich besuche nicht nur Berlin, sondern auch Hamburg.", bn: "আমি শুধু বার্লিনই ভ্রমণ করছি না, হামবুর্গও করছি।" },
+              { de: "Mein Bruder arbeitet nicht nur, sondern er studiert auch.", bn: "আমার ভাই শুধু কাজই করে না, সে পড়াশোনাও করে।" },
+              { de: "Das Wetter ist nicht nur warm, sondern es ist auch sonnig.", bn: "আবহাওয়া শুধু গরমই নয়, রৌদ্রোজ্জ্বলও।" }
+            ]
+          },
+          {
+            german: "einerseits … andererseits",
+            bengali: "একদিকে … অন্যদিকে",
+            english: "on the one hand … on the other hand",
+            type: "Zweiteiliger Adverbialkonnektor – Position 1",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion contrasting two sides of an argument.",
+            examples: [
+              { de: "Einerseits möchte ich reisen, andererseits muss ich arbeiten.", bn: "একদিকে আমি ভ্রমণ করতে চাই, অন্যদিকে আমাকে কাজ করতে হবে।" },
+              { de: "Einerseits ist das Auto schön, andererseits kostet es zu viel.", bn: "একদিকে গাড়িটি সুন্দর, অন্যদিকে এটির দাম অনেক বেশি।" },
+              { de: "Einerseits will er lernen, andererseits spielt er lieber.", bn: "একদিকে সে পড়াশোনা করতে চায়, অন্যদিকে সে খেলাধুলা বেশি পছন্দ করে।" },
+              { de: "Einerseits mag ich Kaffee, andererseits trinke ich oft Tee.", bn: "একদিকে আমি কফি পছন্দ করি, অন্যদিকে আমি প্রায়ই চা পান করি।" },
+              { de: "Einerseits ist Berlin laut, andererseits ist es sehr interessant.", bn: "একদিকে বার্লিন কোলাহলপূর্ণ, অন্যদিকে এটি বেশ আকর্ষণীয়।" },
+              { de: "Einerseits schläft er gerne, andererseits steht er früh auf.", bn: "একদিকে সে ঘুমাতে পছন্দ করে, অন্যদিকে সে ভোরে ঘুম থেকে ওঠে।" },
+              { de: "Einerseits ist Sport gut, andererseits fehlt mir oft die Zeit.", bn: "একদিকে খেলাধুলা করা ভালো, অন্যদিকে আমার প্রায়ই সময়ের অভাব হয়।" }
+            ]
+          },
+          {
+            german: "während (Contrast)",
+            bengali: "যখন / অথচ",
+            english: "while / whereas",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Can also express contrast (whereas).",
+            examples: [
+              { de: "Er liest ein Buch, während sie fernsieht.", bn: "সে একটি বই পড়ছে, যখন সে (মেয়েটি) টিভি দেখছে।" },
+              { de: "Während ich koche, hört mein Bruder Musik.", bn: "যখন আমি রান্না করি, আমার ভাই গান শোনে।" },
+              { de: "Sie spart Geld, während er alles ausgibt.", bn: "সে টাকা জমায়, অথচ সে (ছেলেটি) সব খরচ করে ফেলে।" },
+              { de: "Während es draußen stürmt, sitzen wir gemütlich drinnen.", bn: "যখন বাইরে ঝড় হচ্ছে, আমরা ভেতরে আরামে বসে আছি।" },
+              { de: "Er arbeitet hart, während die anderen Pause machen.", bn: "সে কঠোর পরিশ্রম করছে, যখন অন্যরা বিরতি নিচ্ছে।" }
+            ]
+          },
+          {
+            german: "nachdem",
+            bengali: "পরে",
+            english: "after",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B1",
+            grammar: "Nebensatz (Verb am Ende). Sequence of tenses (often Plusquamperfekt + Präteritum/Perfekt).",
+            examples: [
+              { de: "Nachdem ich gegessen hatte, bin ich geschlafen.", bn: "ভাত খাওয়ার পর আমি ঘুমিয়ে গিয়েছি।" },
+              { de: "Nachdem ich gefrühstückt hatte, bin ich zur Schule gefahren.", bn: "নাস্তা করার পর আমি স্কুলে গিয়েছিলাম।" },
+              { de: "Nachdem ich zu Abend gegessen hatte, putzte ich mir die Zähne.", bn: "রাতের খাবার খাওয়ার পর, আমি আমার দাঁত মেজেছিলাম।" },
+              { de: "Nachdem sie viel Geld gespart hatte, kaufte sie ein neues Auto.", bn: "প্রচুর টাকা জমানোর পর, সে একটি নতুন গাড়ি কিনেছিল।" },
+              { de: "Nachdem ich die Einladung erhalten hatte, ging ich zur Party.", bn: "দাওয়াত পাওয়ার পর, আমি পার্টিতে গিয়েছিলাম।" },
+              { de: "Nachdem wir das Ticket gekauft hatten, sind wir ins Kino gegangen.", bn: "টিকিট কেনার পর আমরা সিনেমায় গিয়েছিলাম।" }
+            ]
+          },
+          {
+            german: "weder … noch",
+            bengali: "এটিও না … ওটিও না",
+            english: "neither … nor",
+            type: "Zweiteiliger Konnektor – Inversion nach 'noch'",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion negating two options.",
+            examples: [
+              { de: "Ich habe weder Zeit noch Geld.", bn: "আমার সময়ও নেই, টাকাও নেই।" },
+              { de: "Er spricht weder Englisch noch Französisch.", bn: "সে ইংরেজিও বলে না, ফরাসিও বলে না।" },
+              { de: "Sie isst weder Fleisch noch Fisch.", bn: "সে মাংসও খায় না, মাছও খায় না।" },
+              { de: "Das Wetter ist heute weder kalt noch warm.", bn: "আজকের আবহাওয়া ঠান্ডাও নয়, গরমও নয়।" },
+              { de: "Wir trinken weder Kaffee noch Tee.", bn: "আমরা কফিও পান করি না, চাও পান করি না।" },
+              { de: "Er kann weder singen noch tanzen.", bn: "সে গান গাইতেও পারে না, নাচতেও পারে না।" },
+              { de: "Ich besuche weder das Kino noch das Theater.", bn: "আমি সিনেমাতেও যাচ্ছি না, থিয়েটারেও যাচ্ছি না।" }
+            ]
+          },
+          {
+            german: "zwar … aber",
+            bengali: "যদিও … কিন্তু",
+            english: "admittedly … but",
+            type: "Zweiteiliger Konnektor – Position 0",
+            level: "B1",
+            grammar: "Zweiteilige Konjunktion conceding a point then contrasting it.",
+            examples: [
+              { de: "Das Auto ist zwar alt, aber es fährt gut.", bn: "গাড়িটি যদিও পুরোনো, কিন্তু এটি ভালো চলে।" },
+              { de: "Ich bin zwar müde, aber ich lerne weiter.", bn: "আমি যদিও ক্লান্ত, কিন্তু আমি পড়া চালিয়ে যাচ্ছি।" },
+              { de: "Deutsch ist zwar schwer, aber es macht Spaß.", bn: "জার্মান ভাষা যদিও কঠিন, কিন্তু এটি আনন্দদায়ক।" },
+              { de: "Die Wohnung ist zwar klein, aber sie ist schön.", bn: "অ্যাপার্টমেন্টটি যদিও ছোট, কিন্তু এটি সুন্দর।" },
+              { de: "Er lernt zwar viel, aber er versteht es nicht.", bn: "সে যদিও অনেক পড়াশোনা করে, কিন্তু সে এটি বোঝে না।" },
+              { de: "Das Essen ist zwar teuer, aber es schmeckt gut.", bn: "খাবারটি যদিও দামি, কিন্তু এটি খেতে ভালো।" },
+              { de: "Es regnet zwar heute, aber wir gehen spazieren.", bn: "আজ যদিও বৃষ্টি হচ্ছে, কিন্তু আমরা হাঁটতে যাচ্ছি।" }
+            ]
+          },
+          {
+            german: "je … desto / umso",
+            bengali: "যত … তত",
+            english: "the … the",
+            type: "Zweiteiliger Konnektor – NS (je) & HS (desto)",
+            level: "B1",
+            grammar: "je + Nebensatz (Verb am Ende), desto/umso + Hauptsatz (Inversion).",
+            examples: [
+              { de: "Je mehr du lernst, desto besser verstehst du.", bn: "তুমি যত বেশি পড়বে, তত ভালো বুঝবে।" },
+              { de: "Je älter man wird, umso klüger wird man.", bn: "মানুষ যত বৃদ্ধ হয়, তত বেশি জ্ঞানী হয়।" },
+              { de: "Je schneller du rennst, desto früher kommst du an.", bn: "তুমি যত দ্রুত দৌড়াবে, তত তাড়াতাড়ি পৌঁছাবে।" },
+              { de: "Je mehr Sport er macht, desto fitter fühlt er sich.", bn: "সে যত বেশি খেলাধুলা করবে, তত বেশি ফিট বোধ করবে।" },
+              { de: "Je wärmer das Wetter ist, umso lieber gehe ich raus.", bn: "আবহাওয়া যত গরম হয়, আমি তত বেশি বাইরে যেতে পছন্দ করি।" },
+              { de: "Je billiger das Auto ist, desto schlechter fährt es.", bn: "গাড়িটি যত সস্তা হয়, তত খারাপ চলে।" },
+              { de: "Je mehr Leute kommen, desto lustiger wird die Party.", bn: "যত বেশি মানুষ আসবে, পার্টি তত বেশি আনন্দদায়ক হবে।" }
+            ]
+          },
+
+          // ==================== B2 ====================
+          {
+            german: "obgleich / obschon",
+            bengali: "যদিও",
+            english: "although / even though",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B2",
+            grammar: "Nebensatz (Verb am Ende). Formal variant of 'obwohl'.",
+            examples: [
+              { de: "Er kam pünktlich, obgleich der Verkehr schrecklich war.", bn: "সে সময়মতো এসেছিল, যদিও ট্রাফিক ভয়াবহ ছিল।" },
+              { de: "Obgleich sie wenig schläft, hat sie viel Energie.", bn: "যদিও সে কম ঘুমায়, তার প্রচুর শক্তি আছে।" },
+              { de: "Er kaufte den Anzug, obgleich er nicht perfekt passte.", bn: "সে স্যুটটি কিনেছিল, যদিও এটি নিখুঁতভাবে ফিট হয়নি।" },
+              { de: "Obgleich es riskant ist, will er investieren.", bn: "যদিও এটি ঝুঁকিপূর্ণ, সে বিনিয়োগ করতে চায়।" },
+              { de: "Wir haben das Spiel verloren, obgleich wir gut spielten.", bn: "আমরা খেলায় হেরেছি, যদিও আমরা ভালো খেলেছিলাম।" }
+            ]
+          },
+          {
+            german: "allerdings",
+            bengali: "তবে / অবশ্য",
+            english: "however / admittedly",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "B2",
+            grammar: "Hauptsatz (Position 1 – Inversion). Restrictive adverbial connector.",
+            examples: [
+              { de: "Das Hotel ist schön, allerdings ist es sehr laut.", bn: "হোটেলটি সুন্দর, তবে এটি খুব কোলাহলপূর্ণ।" },
+              { de: "Er hat zugesagt, allerdings kommt er etwas später.", bn: "সে রাজি হয়েছে, তবে সে কিছুটা দেরিতে আসবে।" },
+              { de: "Ich helfe dir, allerdings habe ich nur wenig Zeit.", bn: "আমি তোমাকে সাহায্য করব, তবে আমার কাছে খুব কম সময় আছে।" },
+              { de: "Die Prüfung war fair, allerdings war sie extrem lang.", bn: "পরীক্ষাটি ন্যায্য ছিল, তবে এটি অত্যন্ত দীর্ঘ ছিল।" },
+              { de: "Das Produkt ist gut, allerdings kostet es viel Geld.", bn: "পণ্যটি ভালো, তবে এটার জন্য অনেক টাকা খরচ হয়।" }
+            ]
+          },
+          {
+            german: "sofern",
+            bengali: "যদি / শর্ত থাকে যে",
+            english: "provided that / as long as",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B2",
+            grammar: "Nebensatz (Verb am Ende). Expresses a condition.",
+            examples: [
+              { de: "Wir kommen morgen, sofern das Wetter gut bleibt.", bn: "আমরা আগামীকাল আসব, যদি আবহাওয়া ভালো থাকে।" },
+              { de: "Du kannst das Auto nehmen, sofern du vorsichtig fährst.", bn: "তুমি গাড়িটি নিতে পারো, যদি তুমি সাবধানে চালাও।" },
+              { de: "Er hilft mir, sofern er heute Zeit hat.", bn: "সে আমাকে সাহায্য করবে, যদি আজ তার সময় থাকে।" },
+              { de: "Ich kaufe das Buch, sofern es nicht zu teuer ist.", bn: "আমি বইটি কিনব, যদি এটি খুব দামি না হয়।" },
+              { de: "Wir spielen im Garten, sofern es nicht regnet.", bn: "আমরা বাগানে খেলব, যদি বৃষ্টি না হয়।" },
+              { de: "Du bestehst den Test, sofern du jeden Tag lernst.", bn: "তুমি পরীক্ষায় পাস করবে, যদি তুমি প্রতিদিন পড়াশোনা করো।" },
+              { de: "Ich rufe dich an, sofern ich den Schlüssel finde.", bn: "আমি তোমাকে কল করব, যদি আমি চাবিটি খুঁজে পাই।" }
+            ]
+          },
+          {
+            german: "falls",
+            bengali: "যদি / কোনো কারণে",
+            english: "in case",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "B2",
+            grammar: "Nebensatz (Verb am Ende). Expresses a precautionary condition.",
+            examples: [
+              { de: "Falls es morgen regnet, bleiben wir zu Hause.", bn: "যদি আগামীকাল বৃষ্টি হয়, আমরা বাড়িতে থাকব।" },
+              { de: "Falls du Hilfe brauchst, ruf mich an.", bn: "যদি তোমার সাহায্যের প্রয়োজন হয়, আমাকে কল কোরো।" },
+              { de: "Ich bringe Brot mit, falls du Hunger hast.", bn: "তোমার যদি খিদে পেয়ে থাকে, আমি সাথে রুটি নিয়ে আসব।" },
+              { de: "Falls der Bus Verspätung hat, nehme ich ein Taxi.", bn: "যদি বাসের দেরি হয়, আমি একটা ট্যাক্সি নেব।" },
+              { de: "Er kommt später, falls er länger arbeiten muss.", bn: "সে পরে আসবে, যদি তাকে বেশি সময় কাজ করতে হয়।" },
+              { de: "Falls du Zeit hast, trinken wir einen Kaffee.", bn: "যদি তোমার সময় থাকে, আমরা এক কাপ কফি পান করব।" },
+              { de: "Ich antworte dir, falls ich deine E-Mail bekomme.", bn: "আমি তোমাকে উত্তর দেব, যদি আমি তোমার ইমেইলটি পাই।" }
+            ]
+          },
+
+          // ==================== C1 ====================
+          {
+            german: "folglich / demnach",
+            bengali: "অতএব",
+            english: "consequently / accordingly",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "C1",
+            grammar: "Hauptsatz (Position 1 – Inversion). Formal logical consequence.",
+            examples: [
+              { de: "Er hat nicht gelernt, folglich hat er die Prüfung nicht bestanden.", bn: "সে পড়াশোনা করেনি, অতএব সে পরীক্ষায় পাস করতে পারেনি।" },
+              { de: "Die Fabrik schließt, folglich verlieren viele Menschen ihre Arbeit.", bn: "কারখানাটি বন্ধ হয়ে যাচ্ছে, অতএব অনেক মানুষ তাদের কাজ হারাচ্ছে।" },
+              { de: "Es gab einen Streik, folglich verspäteten sich alle Züge.", bn: "একটি ধর্মঘট হয়েছিল, অতএব সমস্ত ট্রেন দেরিতে চলছিল।" },
+              { de: "Der Vertrag wurde unterschrieben, demnach ist er jetzt gültig.", bn: "চুক্তিটি স্বাক্ষরিত হয়েছে, অতএব এটি এখন বৈধ।" },
+              { de: "Der Zeuge lügt, folglich ist seine Aussage wertlos.", bn: "সাক্ষী মিথ্যা বলছে, অতএব তার জবানবন্দি মূল্যহীন।" }
+            ]
+          },
+          {
+            german: "andernfalls",
+            bengali: "অন্যথায়",
+            english: "otherwise",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "C1",
+            grammar: "Hauptsatz (Position 1 – Inversion). Expresses an alternative negative consequence.",
+            examples: [
+              { de: "Du musst dich beeilen, andernfalls verpasst du den Flug.", bn: "তোমাকে তাড়াহুড়ো করতে হবে, অন্যথায় তুমি ফ্লাইটটি মিস করবে।" },
+              { de: "Bezahlen Sie die Rechnung, andernfalls bekommen Sie eine Mahnung.", bn: "বিলটি পরিশোধ করুন, অন্যথায় আপনি একটি সতর্কবার্তা পাবেন।" },
+              { de: "Wir müssen sparen, andernfalls gehen wir pleite.", bn: "আমাদের সঞ্চয় করতে হবে, অন্যথায় আমরা দেউলিয়া হয়ে যাব।" },
+              { de: "Bitte antworten Sie bald, andernfalls stornieren wir die Buchung.", bn: "দয়া করে শীঘ্রই উত্তর দিন, অন্যথায় আমরা বুকিংটি বাতিল করব।" },
+              { de: "Halten Sie sich an die Regeln, andernfalls werden Sie bestraft.", bn: "নিয়মগুলো মেনে চলুন, অন্যথায় আপনাকে শাস্তি দেওয়া হবে।" }
+            ]
+          },
+          {
+            german: "indem",
+            bengali: "করার মাধ্যমে / যেভাবে",
+            english: "by (doing something) / in that",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "C1",
+            grammar: "Nebensatz (Verb am Ende). Explains the method or manner.",
+            examples: [
+              { de: "Man lernt eine Sprache, indem man sie täglich spricht.", bn: "মানুষ একটি ভাষা শেখে, এটি প্রতিদিন বলার মাধ্যমে।" },
+              { de: "Er sparte Geld, indem er auf Restaurantbesuche verzichtete.", bn: "সে টাকা জমিয়েছিল, রেস্তোরাঁয় যাওয়া পরিহার করার মাধ্যমে।" },
+              { de: "Sie löste das Problem, indem sie die Anleitung las.", bn: "সে সমস্যার সমাধান করেছিল, নির্দেশিকাটি পড়ার মাধ্যমে।" },
+              { de: "Indem wir zusammenarbeiten, können wir das Ziel erreichen.", bn: "একসাথে কাজ করার মাধ্যমে, আমরা লক্ষ্য অর্জন করতে পারি।" },
+              { de: "Er verbesserte seine Fitness, indem er jeden Tag joggte.", bn: "সে তার ফিটনেস উন্নত করেছিল, প্রতিদিন জগিং করার মাধ্যমে।" }
+            ]
+          },
+          {
+            german: "angenommen dass",
+            bengali: "ধরে নেওয়া যাক যে",
+            english: "assuming that / supposing that",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "C1",
+            grammar: "Nebensatz (Verb am Ende). Presents a hypothesis.",
+            examples: [
+              { de: "Angenommen, dass das Wetter schön bleibt, machen wir ein Picknick.", bn: "ধরে নেওয়া যাক যে আবহাওয়া ভালো থাকবে, তাহলে আমরা পিকনিক করব।" },
+              { de: "Angenommen, dass er recht hat, müssen wir den Plan ändern.", bn: "ধরে নেওয়া যাক যে সে সঠিক, তাহলে আমাদের পরিকল্পনা পরিবর্তন করতে হবে।" },
+              { de: "Angenommen, dass du morgen Zeit hast, gehen wir ins Kino.", bn: "ধরে নেওয়া যাক যে আগামীকাল তোমার সময় আছে, তাহলে আমরা সিনেমা দেখতে যাব।" },
+              { de: "Angenommen, dass der Zug pünktlich kommt, sind wir um fünf Uhr da.", bn: "ধরে নেওয়া যাক যে ট্রেনটি সময়ে আসবে, তাহলে আমরা পাঁচটার মধ্যে সেখানে পৌঁছাব।" },
+              { de: "Angenommen, dass das Auto billig ist, kaufe ich es sofort.", bn: "ধরে নেওয়া যাক যে গাড়িটি সস্তা, তাহলে আমি এটি এখনই কিনব।" },
+              { de: "Angenommen, dass sie die Prüfung besteht, feiert sie am Samstag.", bn: "ধরে নেওয়া যাক যে সে পরীক্ষায় পাস করবে, তাহলে সে শনিবারে উদযাপন করবে।" },
+              { de: "Angenommen, dass du Hilfe brauchst, helfe ich dir gerne.", bn: "ধরে নেওয়া যাক যে তোমার সাহায্যের প্রয়োজন, তাহলে আমি তোমাকে সানন্দে সাহায্য করব।" }
+            ]
+          },
+          {
+            german: "es sei denn",
+            bengali: "যদি না / তা না হলে",
+            english: "unless",
+            type: "Hauptsatzkonnektor (HS) – Position 0",
+            level: "C1",
+            grammar: "Introduces an exception (often followed by a clause).",
+            examples: [
+              { de: "Wir gehen morgen wandern, es sei denn, es regnet stark.", bn: "আমরা আগামীকাল হাইকিংয়ে যাব, যদি না খুব বৃষ্টি হয়।" },
+              { de: "Ich kaufe das Auto, es sei denn, es ist zu teuer.", bn: "আমি গাড়িটি কিনব, যদি না এটি খুব দামি হয়।" },
+              { de: "Er kommt heute zum Kurs, es sei denn, er ist krank.", bn: "সে আজ কোর্সে আসবে, যদি না সে অসুস্থ থাকে।" },
+              { de: "Wir essen heute Pizza, es sei denn, du willst Pasta.", bn: "আমরা আজ পিৎজা খাব, যদি না তুমি পাস্তা চাও।" },
+              { de: "Sie bleibt zu Hause, es sei denn, das Wetter wird besser.", bn: "সে বাড়িতেই থাকবে, যদি না আবহাওয়া আরও ভালো হয়।" },
+              { de: "Ich rufe dich um acht Uhr an, es sei denn, ich habe keine Zeit.", bn: "আমি তোমাকে আটটায় কল করব, যদি না আমার সময়ের অভাব হয়।" },
+              { de: "Wir fliegen nach Deutschland, es sei denn, die Flüge sind ausgebucht.", bn: "আমরা জার্মানিতে উড়াল দেব, যদি না সব ফ্লাইট বুকড হয়ে যায়।" }
+            ]
+          },
+          {
+            german: "anstatt dass / statt dass",
+            bengali: "পরিবর্তে / বদলে",
+            english: "instead of (doing something)",
+            type: "Nebensatzkonnektor (NS) – Verb am Ende",
+            level: "C1",
+            grammar: "Nebensatz (Verb am Ende). Expresses replacement of an expected action.",
+            examples: [
+              { de: "Anstatt dass er lernt, spielt er stundenlang Videospiele.", bn: "পড়াশোনা করার পরিবর্তে, সে ঘণ্টার পর ঘণ্টা ভিডিও গেম খেলে।" },
+              { de: "Anstatt dass sie Suppe kocht, bestellt sie eine Pizza.", bn: "স্যুপ রান্না করার পরিবর্তে, সে একটি পিৎজা অর্ডার করছে।" },
+              { de: "Anstatt dass wir mit dem Bus fahren, gehen wir zu Fuß.", bn: "বাসে যাওয়ার পরিবর্তে, আমরা পায়ে হেঁটে যাচ্ছি।" },
+              { de: "Anstatt dass du mir hilfst, schläfst du auf dem Sofa.", bn: "আমাকে সাহায্য করার পরিবর্তে, তুমি সোফায় ঘুমাচ্ছ।" },
+              { de: "Anstatt dass er schläft, liest er ein spannendes Buch.", bn: "ঘুমানোর পরিবর্তে, সে একটি রোমাঞ্চকর বই পড়ছে।" },
+              { de: "Anstatt dass wir fernsehen, machen wir einen Spaziergang.", bn: "টেলিভিশন দেখার পরিবর্তে, আমরা হাঁটতে বের হচ্ছি।" },
+              { de: "Anstatt dass sie arbeitet, macht sie Urlaub am Strand.", bn: "কাজ করার পরিবর্তে, সে সমুদ্রসৈকতে ছুটি কাটাচ্ছে।" }
+            ]
+          },
+
+          // ==================== C2 ====================
+          {
+            german: "demzufolge",
+            bengali: "তদনুসারে",
+            english: "consequently / therefore",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "C2",
+            grammar: "Hauptsatz (Position 1 – Inversion). High register formal consequence.",
+            examples: [
+              { de: "Die Nachfrage sank, demzufolge fielen auch die Preise.", bn: "চাহিদা কমে গিয়েছিল, তদনুসারে দামও কমে গিয়েছিল।" },
+              { de: "Er hat seine Pflichten verletzt, demzufolge wurde er entlassen.", bn: "সে তার কর্তব্য লঙ্ঘন করেছে, তদনুসারে তাকে বরখাস্ত করা হয়েছে।" },
+              { de: "Das Budget wurde gekürzt, demzufolge müssen Projekte gestoppt werden.", bn: "বাজেট কমানো হয়েছে, তদনুসারে প্রকল্পগুলো বন্ধ করতে হবে।" },
+              { de: "Es gab keine Beweise, demzufolge wurde der Angeklagte freigesprochen.", bn: "কোনো প্রমাণ ছিল না, তদনুসারে অভিযুক্তকে খালাস দেওয়া হয়েছিল।" },
+              { de: "Der Umsatz ist gestiegen, demzufolge erhalten die Mitarbeiter einen Bonus.", bn: "বিক্রি বেড়েছে, তদনুসারে কর্মীরা একটি বোনাস পাচ্ছেন।" }
+            ]
+          },
+          {
+            german: "ungeachtet dessen",
+            bengali: "তা সত্ত্বেও",
+            english: "notwithstanding / regardless of that",
+            type: "Adverbial – Position 1 (Inversion)",
+            level: "C2",
+            grammar: "Hauptsatz (Position 1 – Inversion). Highly formal literary contrast.",
+            examples: [
+              { de: "Es gab heftige Kritik. Ungeachtet dessen setzte er den Plan durch.", bn: "তীব্র সমালোচনা হয়েছিল। তা সত্ত্বেও সে পরিকল্পনাটি বাস্তবায়ন করেছিল।" },
+              { de: "Die Lage ist schwierig. Ungeachtet dessen bleiben wir optimistisch.", bn: "পরিস্থিতি কঠিন। তা সত্ত্বেও আমরা আশাবাদী থাকছি।" },
+              { de: "Er war verletzt. Ungeachtet dessen spielte er das Match zu Ende.", bn: "সে আহত ছিল। তা সত্ত্বেও সে ম্যাচটি শেষ পর্যন্ত খেলেছিল।" },
+              { de: "Die Kosten sind hoch. Ungeachtet dessen investiert die Firma weiter.", bn: "খরচ অনেক বেশি। তা সত্ত্বেও কোম্পানিটি বিনিয়োগ চালিয়ে যাচ্ছে।" },
+              { de: "Es war verboten. Ungeachtet dessen betraten sie das Gelände.", bn: "এটি নিষিদ্ধ ছিল। তা সত্ত্বেও তারা প্রাঙ্গনে প্রবেশ করেছিল।" }
+            ]
+          },
+          {
+            german: "geschweige denn",
+            bengali: "দূরের কথা",
+            english: "let alone / not to mention",
+            type: "Hauptsatzkonnektor (HS) – Position 0 (Ellipse)",
+            level: "C2",
+            grammar: "Connects clauses or elements emphasizing an even more unlikely extreme.",
+            examples: [
+              { de: "Er kann kein Wasser kochen, geschweige denn ein Drei-Gänge-Menü zubereiten.", bn: "সে পানিই ফোটাতে পারে না, একটি থ্রি-কোর্স মিল রান্না করা তো দূরের কথা।" },
+              { de: "Sie hat kein Geld für Brot, geschweige denn für ein neues Auto.", bn: "তার রুটি কেনার টাকাই নেই, একটি নতুন গাড়ি কেনা তো দূরের কথা।" },
+              { de: "Ich habe keine Zeit für ein Hobby, geschweige denn für einen Urlaub.", bn: "আমার একটা শখের জন্যই সময় নেই, ছুটিতে যাওয়া তো দূরের কথা।" },
+              { de: "Er versteht die Grundlagen nicht, geschweige denn die fortgeschrittene Theorie.", bn: "সে মৌলিক বিষয়গুলোই বোঝে না, উন্নত তত্ত্ব তো দূরের কথা।" },
+              { de: "Sie kann kaum laufen, geschweige denn am Marathon teilnehmen.", bn: "সে তো ঠিকমতো হাঁটতেই পারে না, ম্যারাথনে অংশ নেওয়া তো দূরের কথা।" }
+            ]
+          },
+          {
+            german: "inwiefern / inwieweit",
+            bengali: "কতটা / কোন দিক থেকে",
+            english: "to what extent / in what way",
+            type: "Indirekter Fragesatz (NS) – Verb am Ende",
+            level: "C2",
+            grammar: "Nebensatz (Verb am Ende). Asks or states the degree or extent of something.",
+            examples: [
+              { de: "Ich weiß nicht, inwiefern das wahr ist.", bn: "আমি জানি না, এটি কতটা সত্য।" },
+              { de: "Er fragt mich, inwieweit ich ihm helfen kann.", bn: "সে আমাকে জিজ্ঞেস করছে, আমি তাকে কতখানি সাহায্য করতে পারি।" },
+              { de: "Es ist unklar, inwiefern der Plan funktionieren kann.", bn: "এটি অস্পষ্ট যে পরিকল্পনাটি কতখানি কাজ করতে পারে।" },
+              { de: "Sie möchte wissen, inwieweit du Deutsch verstehst.", bn: "সে জানতে চায়, তুমি কতটা জার্মান বোঝো।" },
+              { de: "Wir müssen prüfen, inwiefern das Auto repariert ist.", bn: "আমাদের পরীক্ষা করতে হবে, গাড়িটি কতখানি মেরামত করা হয়েছে।" },
+              { de: "Ich kann nicht sagen, inwieweit das Wetter morgen gut bleibt.", bn: "আমি বলতে পারছি না, আগামীকাল আবহাওয়া কতখানি ভালো থাকবে।" },
+              { de: "Er erklärt mir, inwiefern dieser Kurs wichtig ist.", bn: "সে আমাকে ব্যাখ্যা করছে, এই কোর্সটি কোন দিক থেকে গুরুত্বপূর্ণ।" }
+            ]
+          }
+        ];
+
+        function App() {
+          const [vocabulary, setVocabulary] = useState(defaultVocabulary);
+          const [selectedLevel, setSelectedLevel] = useState('All');
+          const [searchQuery, setSearchQuery] = useState('');
+          const [isDarkMode, setIsDarkMode] = useState(false);
+          const [expandedConnector, setExpandedConnector] = useState(null);
+
+          useEffect(() => {
+            if (isDarkMode) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+          }, [isDarkMode]);
+
+          const filteredVocabulary = vocabulary.filter(item => {
+            const matchesLevel = selectedLevel === 'All' || item.level === selectedLevel;
+            const matchesSearch = item.german.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                  item.bengali.includes(searchQuery) ||
+                                  item.english.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesLevel && matchesSearch;
+          });
+
+          const levels = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+          const playAudio = (text) => {
+            if ('speechSynthesis' in window) {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = 'de-DE';
+              utterance.rate = 0.9;
+              window.speechSynthesis.speak(utterance);
+            }
+          };
+
+          const theme = {
+            bg: isDarkMode ? "bg-slate-950" : "bg-slate-50",
+            cardBg: isDarkMode ? "bg-slate-900" : "bg-white",
+            text: isDarkMode ? "text-slate-100" : "text-slate-900",
+            secondaryText: isDarkMode ? "text-slate-400" : "text-slate-600",
+            border: isDarkMode ? "border-slate-800" : "border-slate-200",
+          };
+
+          return (
+            <div className={`min-h-screen ${theme.bg} ${theme.text} font-sans transition-colors duration-300 pb-16`}>
+              
+              <header className={`sticky top-0 z-20 backdrop-blur-md ${isDarkMode ? 'bg-slate-900/90 border-b border-slate-800' : 'bg-white/90 border-b border-slate-200'} shadow-sm`}>
+                <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-11 h-11 bg-gradient-to-br from-sky-500 to-emerald-500 text-white rounded-2xl flex items-center justify-center font-extrabold text-lg shadow-lg shadow-sky-500/25">
+                      D
+                    </div>
+                    <div>
+                      <h1 className="text-xl font-bold tracking-tight">Deutsch mit Shakil</h1>
+                      <p className="text-xs text-sky-600 dark:text-sky-400 font-semibold">German Connectors & Grammar Library</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                    <div className="relative flex-1 sm:w-72">
+                      <input 
+                        type="text" 
+                        placeholder="Search connector (e.g. weil, obwohl)..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={`w-full ${isDarkMode ? 'bg-slate-800 text-slate-100 placeholder-slate-500 border-slate-700' : 'bg-slate-100 text-slate-900 placeholder-slate-400 border-slate-200'} border px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition`}
+                      />
+                    </div>
+                    <button 
+                      onClick={() => setIsDarkMode(!isDarkMode)} 
+                      className={`p-2.5 rounded-xl ${isDarkMode ? 'bg-slate-800 text-amber-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'} transition shadow-sm`}
+                      title="Toggle Dark Mode"
+                    >
+                      {isDarkMode ? '☀️' : '🌙'}
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-5xl mx-auto px-4 pt-8">
+                
+                {/* Level Filters */}
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+                  {levels.map(level => (
+                    <button
+                      key={level}
+                      onClick={() => setSelectedLevel(level)}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition shadow-sm ${
+                        selectedLevel === level
+                          ? 'bg-sky-600 text-white shadow-sky-500/30 shadow-md scale-105'
+                          : `${isDarkMode ? 'bg-slate-900 text-slate-300 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'} border ${theme.border}`
+                      }`}
+                    >
+                      {level === 'All' ? 'All Levels' : `Level ${level}`}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Counter */}
+                <div className="flex justify-between items-center mb-6 px-2">
+                  <p className={`text-sm font-medium ${theme.secondaryText}`}>
+                    Showing <span className="font-bold text-sky-600 dark:text-sky-400">{filteredVocabulary.length}</span> connector entries with full examples
+                  </p>
+                </div>
+
+                <div className="space-y-5">
+                  {filteredVocabulary.length === 0 ? (
+                    <div className={`text-center py-20 rounded-3xl ${theme.cardBg} border ${theme.border} shadow-sm`}>
+                      <p className={`text-base font-medium ${theme.secondaryText}`}>No connectors found matching your query.</p>
+                    </div>
+                  ) : (
+                    filteredVocabulary.map((item, index) => {
+                      const isExpanded = expandedConnector === item.german;
+                      return (
+                        <div 
+                          key={index} 
+                          className={`${theme.cardBg} rounded-3xl shadow-sm border ${theme.border} overflow-hidden transition duration-300 animate-fade-in hover:shadow-md`}
+                        >
+                          <div className="p-5 sm:p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="flex items-start sm:items-center space-x-4">
+                              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 level-badge-${item.level}`}>
+                                {item.level}
+                              </div>
+                              <div>
+                                <div className="flex items-center space-x-3 flex-wrap gap-y-1">
+                                  <h2 className={`text-2xl sm:text-3xl font-extrabold ${theme.text}`}>{item.german}</h2>
+                                  <button 
+                                    onClick={() => playAudio(item.german)}
+                                    className="p-1.5 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 text-sky-600 dark:text-sky-400 rounded-full transition"
+                                    title="Pronounce"
+                                  >
+                                    🔊
+                                  </button>
+                                </div>
+                                <p className="text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg mt-0.5">
+                                  {item.bengali} <span className="text-xs font-normal text-slate-400 italic">({item.english})</span>
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                              <span className="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 max-w-[180px] truncate" title={item.type}>
+                                {item.type}
+                              </span>
+                              <button 
+                                onClick={() => setExpandedConnector(isExpanded ? null : item.german)}
+                                className="bg-sky-600 hover:bg-sky-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-sky-500/20 transition whitespace-nowrap"
+                              >
+                                {isExpanded ? 'Hide' : `Examples (${item.examples.length})`}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Grammar Rule Box */}
+                          <div className={`px-5 sm:px-7 py-3 ${isDarkMode ? 'bg-slate-800/60 border-t border-slate-800' : 'bg-sky-50/70 border-t border-sky-100'} text-xs font-medium ${theme.secondaryText} flex items-start sm:items-center space-x-2`}>
+                            <span className="text-sky-600 dark:text-sky-400 font-bold uppercase tracking-wider shrink-0">Rule:</span>
+                            <span>{item.grammar}</span>
+                          </div>
+
+                          {isExpanded && (
+                            <div className="p-5 sm:p-7 space-y-3 bg-slate-50/60 dark:bg-slate-950/40 border-t border-slate-100 dark:border-slate-800 animate-fade-in">
+                              <h3 className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-3">
+                                Example Sentences ({item.examples.length})
+                              </h3>
+
+                              <div className="grid grid-cols-1 gap-3">
+                                {item.examples.map((ex, exIdx) => (
+                                  <div 
+                                    key={exIdx} 
+                                    className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.border} shadow-xs hover:border-sky-300 dark:hover:border-sky-700 transition`}
+                                  >
+                                    <div className="flex justify-between items-start gap-2 mb-1.5">
+                                      <p className={`text-base font-semibold ${theme.text} leading-snug`}>
+                                        <span className="text-sky-500 mr-2 font-mono text-xs">#{exIdx + 1}</span>
+                                        {ex.de}
+                                      </p>
+                                      <button 
+                                        onClick={() => playAudio(ex.de)}
+                                        className="text-slate-400 hover:text-sky-600 p-1 rounded transition text-sm shrink-0"
+                                        title="Listen"
+                                      >
+                                        🔊
+                                      </button>
+                                    </div>
+                                    <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 pl-6 leading-snug">
+                                      🇧🇩 {ex.bn}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+              </main>
+
+              <footer className={`mt-16 py-6 text-center text-xs ${theme.secondaryText}`}>
+                Deutsch mit Shakil · German Connectors Learning App · All examples from source PDF
+              </footer>
+            </div>
+          );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
